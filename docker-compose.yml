@@ -6,6 +6,8 @@ services:
       - "./.data/db:/var/lib/mysql"
       - "./conf/mysql:/etc/mysql/conf.d"
     restart: always    
+    ports:
+      - "10091:3306"
     environment:
       MYSQL_ROOT_PASSWORD: confluence
       MYSQL_DATABASE: confluence
