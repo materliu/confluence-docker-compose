@@ -17,7 +17,7 @@ services:
   confluence:
     depends_on:
       - db
-    image: cptactionhank/atlassian-confluence:latest    
+    image: cptactionhank/atlassian-confluence:5.9.9    
     links:
       - db
     ports:
