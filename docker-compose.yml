@@ -1,29 +1,43 @@
-version: '2'
+version: '3'
 services:
   db:
-    image: postgres:latest
+    container_name: confluence_db
+    image: mysql:8
+    security_opt:
+      - seccomp:unconfined
     volumes:
-      - "./.data/db:/var/lib/postgresql"
+      - /etc/localtime:/etc/localtime
+      - ./.data/atlassian/mysql/data:/var/lib/mysql
+      - ./.data/atlassian/mysql/mysql-files:/var/lib/mysql-files/
+      - ./.data/atlassian/mysql/logs/:/data/mysql/logs/
+      - ./my.cnf:/etc/mysql/my.cnf
+    environment:
+      MYSQL_ROOT_PASSWORD: confluence
     restart: always    
     ports:
-      - "10091:3306"
-    environment:
-        POSTGRES_DB: confluence
-        POSTGRES_USER: materliu
-        POSTGRES_PASSWORD: confluence
+      - 5306:3306
+    command: --default-authentication-plugin=mysql_native_password --skip-name-resolve
+
+  adminer:      
+    container_name: confluence_db_viewer
+    image: adminer
+    restart: always
+    links: 
+      - db
+    ports: 
+      - 10092:8080
 
   confluence:
-    depends_on:
-      - db
-    image: cptactionhank/atlassian-confluence:6.6.2
+    container_name: confluence_server
+    build: .
+    volumes:
+      - "./.data/atlassian/confluence-home:/var/atlassian/application-data/confluence"
     links:
       - db
     ports:
-      - "10090:8090"
+      - "8090:8090"
     restart: always    
-    environment: 
-      CONFLUENCE_DB_HOST: db:3306
-      CONFLUENCE_DB_PASSWORD: confluence
-      CONFLUENCE_DB_USER: materliu
-      CONFLUENCE_DB_NAME: confluence  
-
+    environment:
+      - JVM_MINIMUM_MEMORY=2048m
+      - JVM_MAXIMUM_MEMORY=4096m
+      - JVM_RESERVED_CODE_CACHE_SIZE=512m
