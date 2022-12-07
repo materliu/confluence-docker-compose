@@ -41,3 +41,6 @@ services:
       - JVM_MINIMUM_MEMORY=2048m
       - JVM_MAXIMUM_MEMORY=4096m
       - JVM_RESERVED_CODE_CACHE_SIZE=512m
+      - ATL_PROXY_NAME=wiki.dev
+      - ATL_PROXY_PORT=443
+      - ATL_TOMCAT_SCHEME=https
